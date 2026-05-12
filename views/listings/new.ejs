@@ -1,0 +1,109 @@
+<% layout("/layouts/boilerplate") %>
+
+<style>
+  .form-container { max-width: 600px; margin: auto; }
+  .custom-card {
+    border: 2px solid #cf669e;
+    border-radius: 15px;
+    box-shadow: 0 6px 25px rgba(184, 97, 143, 0.3);
+    transition: 0.3s;
+  }
+  .custom-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 35px rgba(231, 87, 164, 0.5);
+  }
+  .btn-custom {
+    background-color: rgb(238, 79, 164);
+    border: none;
+    width: 100%;
+    color: white;
+  }
+  .btn-custom:hover { background-color: rgb(220, 60, 140); }
+</style>
+
+<div class="container mt-5 form-container">
+  <div class="card p-4 custom-card">
+
+    <h3 class="mb-4 text-center">Create Listing</h3>
+
+    <!-- SERVER-SIDE ERROR (Bootstrap alert) -->
+    <% if (typeof error !== 'undefined' && error && error.length > 0) { %>
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>Error:</strong> <%= error[0] %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    <% } %>
+
+    <!-- needs-validation triggers Bootstrap client-side validation -->
+    <form action="/listings" method="POST" class="needs-validation" novalidate>
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Title <span class="text-danger">*</span></label>
+        <input type="text" name="listing[title]" class="form-control" required minlength="3">
+        <div class="invalid-feedback">Please enter a title (min 3 characters).</div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Description <span class="text-danger">*</span></label>
+        <textarea name="listing[description]" class="form-control" rows="3" required minlength="10"></textarea>
+        <div class="invalid-feedback">Please enter a description (min 10 characters).</div>
+      </div>
+
+      <div class="mb-3">
+  <label class="form-label fw-semibold">Image URL</label>
+  <input type="url" name="listing[image]" class="form-control" placeholder="https://example.com/image.jpg">
+  <div class="form-text">Leave empty to use a default image.</div>
+</div>
+
+<div class="mb-3">
+  <label class="form-label fw-semibold">Price (₹) <span class="text-danger">*</span></label>
+  <input type="number" name="listing[price]" class="form-control" required min="0">
+  <div class="invalid-feedback">Please enter a valid price (≥ 0).</div>
+</div>
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Location <span class="text-danger">*</span></label>
+        <input type="text" name="listing[location]" class="form-control" required>
+        <div class="invalid-feedback">Please enter a location.</div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Country <span class="text-danger">*</span></label>
+        <select name="listing[country]" class="form-select" required>
+          <option value="">Select Country</option>
+          <option>India</option>
+          <option>USA</option>
+          <option>UK</option>
+          <option>Canada</option>
+          <option>Australia</option>
+          <option>Germany</option>
+          <option>France</option>
+          <option>Japan</option>
+          <option>Other</option>
+        </select>
+        <div class="invalid-feedback">Please select a country.</div>
+      </div>
+
+      <button type="submit" class="btn btn-custom">Add Listing</button>
+
+    </form>
+
+  </div>
+</div>
+
+<!-- Bootstrap client-side validation script -->
+<script>
+  (() => {
+    'use strict';
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => {
+      form.addEventListener('submit', event => {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  })();
+</script>

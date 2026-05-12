@@ -1,0 +1,68 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="d-flex justify-content-between align-items-center my-4">
+  <h3 class="mb-0">All Listings</h3>
+  <% if (typeof search !== 'undefined' && search) { %>
+    <span class="text-muted">Results for: <strong>"<%= search %>"</strong></span>
+  <% } %>
+</div>
+
+<div class="container">
+  <div class="row">
+
+    <% if (allListings.length === 0) { %>
+      <div class="col-12 text-center py-5">
+        <i class="fa-solid fa-house-circle-xmark fa-3x text-muted mb-3"></i>
+        <h5 class="text-muted">No listings found</h5>
+        <% if (typeof search !== 'undefined' && search) { %>
+          <p>Try a different search term or <a href="/listings">view all listings</a>.</p>
+        <% } else { %>
+          <p>Be the first to <a href="/listings/new">add a listing</a>!</p>
+        <% } %>
+      </div>
+    <% } %>
+
+    <% for (let listing of allListings) { %>
+      <div class="col-md-4 col-sm-6 mb-4">
+        <a href="/listings/<%= listing._id %>" class="text-decoration-none text-dark">
+          <div class="card h-100 shadow-sm" style="border-radius:12px; overflow:hidden;">
+
+            <%
+              let imgUrl = "";
+              if (listing.image) {
+                if (typeof listing.image === "object" && listing.image.url) {
+                  imgUrl = listing.image.url;
+                } else if (typeof listing.image === "string" && listing.image.startsWith("http")) {
+                  imgUrl = listing.image;
+                }
+              }
+              if (!imgUrl) {
+                imgUrl = "https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b?w=800";
+              }
+            %>
+
+            <img
+              src="<%= imgUrl %>"
+              class="card-img-top"
+              style="height:200px; object-fit:cover;"
+              alt="<%= listing.title %>"
+              onerror="this.src='https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b?w=800'"
+            >
+
+            <div class="card-body">
+              <h5 class="card-title"><%= listing.title %></h5>
+              <p class="card-text text-muted mb-1">
+                <i class="fa-solid fa-location-dot"></i> <%= listing.location %>, <%= listing.country %>
+              </p>
+              <p class="card-text fw-semibold">
+                ₹ <%= listing.price.toLocaleString("en-IN") %> <small class="text-muted fw-normal">/ night</small>
+              </p>
+            </div>
+
+          </div>
+        </a>
+      </div>
+    <% } %>
+
+  </div>
+</div>

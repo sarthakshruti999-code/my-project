@@ -1,0 +1,90 @@
+<% layout("/layouts/boilerplate") %>
+
+<style>
+  .form-container { max-width: 500px; margin: auto; }
+  .custom-card {
+    border-radius: 15px;
+    box-shadow: 0 6px 25px rgba(0,0,0,0.1);
+  }
+  .btn-custom {
+    background-color: #ff4da6;
+    color: white;
+    width: 100%;
+    border: none;
+  }
+  .btn-custom:hover { background-color: #e60073; }
+</style>
+
+<div class="container mt-5 form-container">
+  <div class="card p-4 custom-card">
+
+    <h3 class="text-center mb-4">Create Account</h3>
+
+    <!-- SERVER-SIDE ERROR -->
+    <% if (typeof error !== 'undefined' && error && error.length > 0) { %>
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>Error:</strong> <%= error[0] %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    <% } %>
+
+    <form action="/users/signup" method="POST" class="needs-validation" novalidate>
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Username <span class="text-danger">*</span></label>
+        <input type="text" name="username" class="form-control" required minlength="3" maxlength="30">
+        <div class="invalid-feedback">Username must be 3–30 characters.</div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Email <span class="text-danger">*</span></label>
+        <input type="email" name="email" class="form-control" required>
+        <div class="invalid-feedback">Please enter a valid email address.</div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Password <span class="text-danger">*</span></label>
+        <input type="password" name="password" id="password" class="form-control" required minlength="6">
+        <div class="invalid-feedback">Password must be at least 6 characters.</div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Confirm Password <span class="text-danger">*</span></label>
+        <input type="password" name="confirmPassword" id="confirmPassword" class="form-control" required>
+        <div class="invalid-feedback" id="confirmError">Passwords do not match.</div>
+      </div>
+
+      <button type="submit" class="btn btn-custom">Sign Up</button>
+    </form>
+
+    <p class="mt-3 text-center">
+      Already have an account? <a href="/users/login">Login</a>
+    </p>
+
+  </div>
+</div>
+
+<script>
+  (() => {
+    'use strict';
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => {
+      form.addEventListener('submit', event => {
+        // Custom password match check
+        const pwd = document.getElementById('password');
+        const confirmPwd = document.getElementById('confirmPassword');
+        if (pwd && confirmPwd && pwd.value !== confirmPwd.value) {
+          confirmPwd.setCustomValidity('Passwords do not match');
+        } else if (confirmPwd) {
+          confirmPwd.setCustomValidity('');
+        }
+
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  })();
+</script>
