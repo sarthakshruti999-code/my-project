@@ -10,7 +10,15 @@ module.exports.signup = async (req, res, next) => {
         const newUser = new User({ username, email });
         await newUser.setPassword(password);
         await newUser.save();
-        req.login(newUser, (err) => {
+        
+        // Log user in without session manager to avoid "next is not a function"
+        req.login(newUser, { session: false }, (err) => {
+            if (err) return next(err);
+        });
+        
+        // Manually set user and save session
+        req.session.passport = { user: newUser._id.toString() };
+        req.session.save((err) => {
             if (err) return next(err);
             req.flash("success", "Welcome to Wanderlust!");
             res.redirect("/listings");
