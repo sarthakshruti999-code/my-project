@@ -1,40 +1,64 @@
 const User = require("../models/user");
 
+// SIGNUP FORM
 module.exports.renderSignupForm = (req, res) => {
-    res.render("user/signup");
+    return res.render("user/signup");
 };
 
+// SIGNUP
 module.exports.signup = async (req, res, next) => {
     try {
         const { username, email, password } = req.body;
-        const newUser = new User({ username, email });
-        await newUser.setPassword(password);
-        await newUser.save();
-        req.login(newUser, (err) => {
-            if (err) return next(err);
-            req.flash("success", "Welcome to Wanderlust!");
-            res.redirect("/listings");
+
+        const newUser = new User({
+            email,
+            username,
         });
+
+        // REGISTER USER
+        const registeredUser = await User.register(newUser, password);
+
+        // LOGIN AFTER SIGNUP
+        req.login(registeredUser, (err) => {
+            if (err) {
+                return next(err);
+            }
+
+            req.flash("success", "Welcome to Wanderlust!");
+
+            return res.redirect("/listings");
+        });
+
     } catch (err) {
         req.flash("error", err.message);
-        res.redirect("/users/signup");
+
+        return res.redirect("/users/signup");
     }
 };
 
+// LOGIN FORM
 module.exports.renderLoginForm = (req, res) => {
-    res.render("user/login");
+    return res.render("user/login");
 };
 
+// LOGIN
 module.exports.login = (req, res) => {
     req.flash("success", "Welcome back!");
+
     const redirectUrl = res.locals.redirectUrl || "/listings";
-    res.redirect(redirectUrl);
+
+    return res.redirect(redirectUrl);
 };
 
+// LOGOUT
 module.exports.logout = (req, res, next) => {
     req.logout((err) => {
-        if (err) return next(err);
+        if (err) {
+            return next(err);
+        }
+
         req.flash("success", "Logged out successfully!");
-        res.redirect("/users/login");
+
+        return res.redirect("/users/login");
     });
 };
